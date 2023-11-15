@@ -6,6 +6,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.geom.AffineTransform;
+import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -13,32 +15,60 @@ import javax.imageio.ImageIO;
 
 public class Controlador extends JPanel implements KeyListener, ActionListener {
 
-    private BufferedImage[] frames;
-    private int currentFrameIndex = 0;
-    private int x = 200; // Coordenada x inicial de la animación
-    private int y = 200; // Coordenada y inicial de la animación
-    private Timer animationTimer;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private BufferedImage[] framesMickeyMouse;
+    private BufferedImage[] framesHienas;
+    private int currentFrameIndexMickeyMOuse = 0;
+    private int currentFrameIndexHiena = 0;
+    private int xMickeyMouse = 100; // Coordenada x inicial de la animación
+    private int yMickeyMouse = 100; // Coordenada y inicial de la animación
+    private int xHiena = 200; // Coordenada x inicial de la animación
+    private int yHiena= 200; // Coordenada y inicial de la animación
+    private Timer animationTimerMickeyMouse;
+    private Timer animationTimerHiena;
+    private boolean flip = false; // Variable para controlar el giro
 
     public Controlador() {
         // Ruta donde se encuentran los frames de la animación exportada desde Aseprite
         String rutaDirectorio = ".//DisneySprite";
-        int numFrames = 4; // Número total de frames en la animación
+        int numFramesMickeyMouse = 4; // Número total de frames en la animación
 
-        frames = new BufferedImage[numFrames];
+        framesMickeyMouse = new BufferedImage[numFramesMickeyMouse];
 
         // Cargar cada frame como una imagen en el arreglo
-        for (int i = 0; i < numFrames; i++) {
+        for (int i = 0; i < numFramesMickeyMouse; i++) {
             String nombreArchivo = "//MickeyMouse//MickeyMouseMovimiento" + (i + 1) + ".png"; // Nombre del archivo de imagen
             try {
-                frames[i] = ImageIO.read(new File(rutaDirectorio + nombreArchivo));
+            	framesMickeyMouse[i] = ImageIO.read(new File(rutaDirectorio + nombreArchivo));
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
 
-        int delay = 180; // Velocidad de la animación en milisegundos
-        animationTimer = new Timer(delay, this);
-        animationTimer.start();
+        int delayMickeyMouse = 250; // Velocidad de la animación en milisegundos
+        animationTimerMickeyMouse = new Timer(delayMickeyMouse, this);
+        animationTimerMickeyMouse.start();
+        
+        int numFramesHiena = 4; // Número total de frames en la animación
+
+        framesHienas = new BufferedImage[numFramesHiena];
+
+        // Cargar cada frame como una imagen en el arreglo
+        for (int i = 0; i < numFramesHiena; i++) {
+            String nombreArchivo = "//Hienas//hiena" + (i + 1) + ".png"; // Nombre del archivo de imagen
+            try {
+            	framesHienas[i] = ImageIO.read(new File(rutaDirectorio + nombreArchivo));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        int delayHiena = 150; // Velocidad de la animación en milisegundos
+        animationTimerHiena = new Timer(delayHiena, this);
+        animationTimerHiena.start();
 
         setFocusable(true); // Permite al panel recibir eventos del teclado
         addKeyListener(this); // Agrega el KeyListener al panel
@@ -47,30 +77,68 @@ public class Controlador extends JPanel implements KeyListener, ActionListener {
     @Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
-        if (frames[currentFrameIndex] != null) {
-            g.drawImage(frames[currentFrameIndex], x, y, this);
+        if (framesMickeyMouse[currentFrameIndexMickeyMOuse] != null) {
+            // Crear una copia de la imagen original para no modificar la original
+            BufferedImage image = framesMickeyMouse[currentFrameIndexMickeyMOuse];
+
+            // Si flip es verdadero, voltea la imagen horizontalmente
+            if (flip) {
+                // Voltear horizontalmente usando AffineTransform
+                AffineTransform tx = AffineTransform.getScaleInstance(-1, 1);
+                tx.translate(-image.getWidth(null), 0);
+                AffineTransformOp op = new AffineTransformOp(tx, AffineTransformOp.TYPE_NEAREST_NEIGHBOR);
+                image = op.filter(image, null);
+            }
+
+            g.drawImage(image, xMickeyMouse, yMickeyMouse, this);
+        }
+        if (framesHienas[currentFrameIndexHiena] != null) {
+            g.drawImage(framesHienas[currentFrameIndexHiena], xHiena, yHiena, this);
         }
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        currentFrameIndex = (currentFrameIndex + 1) % frames.length;
+        // Lógica para la animación de Mickey Mouse
+        currentFrameIndexMickeyMOuse = (currentFrameIndexMickeyMOuse + 1) % framesMickeyMouse.length;
+
+        // Lógica para la animación de las hienas y su movimiento hacia Mickey Mouse
+        currentFrameIndexHiena = (currentFrameIndexHiena + 1) % framesHienas.length;
+
+        // Calcula la distancia entre la hiena y Mickey Mouse en cada eje
+        int distanciaX = xMickeyMouse - xHiena;
+        int distanciaY = yMickeyMouse - yHiena;
+
+        // Mueve la hiena hacia la posición de Mickey Mouse en ambas direcciones
+        if (distanciaX != 0) {
+            xHiena += (distanciaX > 0) ? 1 : -1;
+        }
+        if (distanciaY != 0) {
+            yHiena += (distanciaY > 0) ? 1 : -1;
+        }
+
         repaint();
     }
 
-    @Override
+
     public void keyPressed(KeyEvent e) {
         int key = e.getKeyCode();
-        int speed = 50; // Velocidad de movimiento
+        int speed = 15;
 
         if (key == KeyEvent.VK_W) {
-            y -= speed; // Mueve hacia arriba
+            // Mueve hacia arriba
+            yMickeyMouse -= speed;
         } else if (key == KeyEvent.VK_S) {
-            y += speed; // Mueve hacia abajo
+            // Mueve hacia abajo
+            yMickeyMouse += speed;
         } else if (key == KeyEvent.VK_A) {
-            x -= speed; // Mueve hacia la izquierda
+            // Mueve hacia la izquierda y activa el flip
+            xMickeyMouse -= speed;
+            flip = true;
         } else if (key == KeyEvent.VK_D) {
-            x += speed; // Mueve hacia la derecha
+            // Mueve hacia la derecha y desactiva el flip
+            xMickeyMouse += speed;
+            flip = false;
         }
 
         repaint();
