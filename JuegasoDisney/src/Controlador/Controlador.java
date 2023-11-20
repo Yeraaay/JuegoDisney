@@ -1,166 +1,140 @@
 package Controlador;
 
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.Graphics;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.awt.geom.AffineTransform;
-import java.awt.image.AffineTransformOp;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
-import javax.imageio.ImageIO;
 
-public class Controlador extends JPanel implements KeyListener, ActionListener {
+import javax.swing.JFrame;
 
-    /**
-	 * 
-	 */
+/**
+ * @author Yeray Moraleda, Jesús Guijarro, Enrique Bellido
+ */
+
+public class Controlador extends JFrame implements Runnable, KeyListener {
+
 	private static final long serialVersionUID = 1L;
-	private BufferedImage[] framesMickeyMouse;
-    private BufferedImage[] framesHienas;
-    private int currentFrameIndexMickeyMOuse = 0;
-    private int currentFrameIndexHiena = 0;
-    private int xMickeyMouse = 100; // Coordenada x inicial de la animación
-    private int yMickeyMouse = 100; // Coordenada y inicial de la animación
-    private int xHiena = 200; // Coordenada x inicial de la animación
-    private int yHiena= 200; // Coordenada y inicial de la animación
-    private Timer animationTimerMickeyMouse;
-    private Timer animationTimerHiena;
-    private boolean flip = false; // Variable para controlar el giro
+	private MickeyMouse mickey;
+	private Hienas hiena;
+	private Ataques ataque;
+	BufferedImage buffer; // Imagen de fondo para "borrar" el rastro
+	final int TOTAL_FRAMES = 5; // Número total de frames en la animación
+	int contadorVelocidad = 0;
+	int contadorAtaque = 0;
+	int contadorFinAtaque = 0;
 
-    public Controlador() {
-        // Ruta donde se encuentran los frames de la animación exportada desde Aseprite
-        String rutaDirectorio = ".//DisneySprite";
-        int numFramesMickeyMouse = 4; // Número total de frames en la animación
+	public Controlador() {
+		mickey = new MickeyMouse(50, 50);
+		hiena = new Hienas(200, 200);
+		ataque = new Ataques(-5, 10);
 
-        framesMickeyMouse = new BufferedImage[numFramesMickeyMouse];
+		setTitle("Mickey vs Hienas");
+		setSize(400, 400);
+		setVisible(true);
+		
+        addKeyListener(this); // Agregar el KeyListener al JFrame
+        setFocusable(true);
+        setFocusTraversalKeysEnabled(false);
 
-        // Cargar cada frame como una imagen en el arreglo
-        for (int i = 0; i < numFramesMickeyMouse; i++) {
-            String nombreArchivo = "//MickeyMouse//MickeyMouseMovimiento" + (i + 1) + ".png"; // Nombre del archivo de imagen
-            try {
-            	framesMickeyMouse[i] = ImageIO.read(new File(rutaDirectorio + nombreArchivo));
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
+		addWindowListener(new WindowAdapter() {
+			public void windowClosing(WindowEvent we) {
+				System.exit(0);
+			}
+		});
 
-        int delayMickeyMouse = 250; // Velocidad de la animación en milisegundos
-        animationTimerMickeyMouse = new Timer(delayMickeyMouse, this);
-        animationTimerMickeyMouse.start();
-        
-        int numFramesHiena = 4; // Número total de frames en la animación
+		buffer = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_RGB);
 
-        framesHienas = new BufferedImage[numFramesHiena];
+		Thread hilo = new Thread(this);
+		hilo.start();
+	}
 
-        // Cargar cada frame como una imagen en el arreglo
-        for (int i = 0; i < numFramesHiena; i++) {
-            String nombreArchivo = "//Hienas//hiena" + (i + 1) + ".png"; // Nombre del archivo de imagen
-            try {
-            	framesHienas[i] = ImageIO.read(new File(rutaDirectorio + nombreArchivo));
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
+	public void run() {
+		while (true) {
+			contadorVelocidad = contadorVelocidad + 5;
 
-        int delayHiena = 150; // Velocidad de la animación en milisegundos
-        animationTimerHiena = new Timer(delayHiena, this);
-        animationTimerHiena.start();
+			// Movimiento de las hienas hacia Mickey
+			hiena.moverHacia(mickey.x, mickey.y);
 
-        setFocusable(true); // Permite al panel recibir eventos del teclado
-        addKeyListener(this); // Agrega el KeyListener al panel
-    }
+			if (contadorVelocidad % 10 == 0) {
+				mickey.updateAnimation();
+				contadorAtaque++;
+			}
+			if (contadorVelocidad % 5 == 0) {
+				hiena.updateAnimation();            	
+			}
+			if (contadorAtaque >= 10) {
+				ataque.updateAnimation();
+				contadorFinAtaque++;
+				if (contadorFinAtaque == 4) {
+					contadorAtaque = 0;
+					contadorFinAtaque = 0;
+				}
+			}
+			repaint();
 
-    @Override
-    public void paintComponent(Graphics g) {
-        super.paintComponent(g);
-        if (framesMickeyMouse[currentFrameIndexMickeyMOuse] != null) {
-            // Crear una copia de la imagen original para no modificar la original
-            BufferedImage image = framesMickeyMouse[currentFrameIndexMickeyMOuse];
+			try {
+				Thread.sleep(100);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+	}
 
-            // Si flip es verdadero, voltea la imagen horizontalmente
-            if (flip) {
-                // Voltear horizontalmente usando AffineTransform
-                AffineTransform tx = AffineTransform.getScaleInstance(-1, 1);
-                tx.translate(-image.getWidth(null), 0);
-                AffineTransformOp op = new AffineTransformOp(tx, AffineTransformOp.TYPE_NEAREST_NEIGHBOR);
-                image = op.filter(image, null);
-            }
-
-            g.drawImage(image, xMickeyMouse, yMickeyMouse, this);
-        }
-        if (framesHienas[currentFrameIndexHiena] != null) {
-            g.drawImage(framesHienas[currentFrameIndexHiena], xHiena, yHiena, this);
-        }
-    }
-
-    @Override
-    public void actionPerformed(ActionEvent e) {
-        // Lógica para la animación de Mickey Mouse
-        currentFrameIndexMickeyMOuse = (currentFrameIndexMickeyMOuse + 1) % framesMickeyMouse.length;
-
-        // Lógica para la animación de las hienas y su movimiento hacia Mickey Mouse
-        currentFrameIndexHiena = (currentFrameIndexHiena + 1) % framesHienas.length;
-
-        // Calcula la distancia entre la hiena y Mickey Mouse en cada eje
-        int distanciaX = xMickeyMouse - xHiena;
-        int distanciaY = yMickeyMouse - yHiena;
-
-        // Mueve la hiena hacia la posición de Mickey Mouse en ambas direcciones
-        if (distanciaX != 0) {
-            xHiena += (distanciaX > 0) ? 1 : -1;
-        }
-        if (distanciaY != 0) {
-            yHiena += (distanciaY > 0) ? 1 : -1;
-        }
-
-        repaint();
-    }
-
-
-    public void keyPressed(KeyEvent e) {
+	public void update(Graphics g) {
+		paint(g);
+	}
+	
+	public void keyPressed(KeyEvent e) {
         int key = e.getKeyCode();
-        int speed = 15;
 
         if (key == KeyEvent.VK_W) {
-            // Mueve hacia arriba
-            yMickeyMouse -= speed;
+            mickey.restarY(); // Mover hacia arriba
+            ataque.restarY(); // Mover hacia arriba
         } else if (key == KeyEvent.VK_S) {
-            // Mueve hacia abajo
-            yMickeyMouse += speed;
+            mickey.sumarY(); // Mover hacia abajo
+            ataque.sumarY(); // Mover hacia abajo
         } else if (key == KeyEvent.VK_A) {
-            // Mueve hacia la izquierda y activa el flip
-            xMickeyMouse -= speed;
-            flip = true;
+            mickey.restarX(); // Mover hacia la izquierda
+            ataque.restarX(); // Mover hacia la izquierda
         } else if (key == KeyEvent.VK_D) {
-            // Mueve hacia la derecha y desactiva el flip
-            xMickeyMouse += speed;
-            flip = false;
+            mickey.sumarX(); // Mover hacia la derecha
+            ataque.sumarX(); // Mover hacia la derecha
         }
-
-        repaint();
     }
 
-    @Override
-    public void keyTyped(KeyEvent e) {
-        // No se usa en este ejemplo, pero debe implementarse por la interfaz KeyListener
-    }
 
-    @Override
-    public void keyReleased(KeyEvent e) {
-        // No se usa en este ejemplo, pero debe implementarse por la interfaz KeyListener
-    }
 
-    public static void main(String[] args) {
-        JFrame ventana = new JFrame("Animación con Movimiento");
-        ventana.setSize(500, 500);
-        ventana.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+	public void paint(Graphics g) {
+		Graphics bufferGraphics = buffer.getGraphics();
 
-        Controlador animacion = new Controlador();
-        ventana.add(animacion);
-        ventana.setVisible(true);
-    }
+		bufferGraphics.setColor(getBackground());
+		bufferGraphics.fillRect(0, 0, getWidth(), getHeight());
+
+		mickey.draw(bufferGraphics);
+		hiena.draw(bufferGraphics);
+		ataque.draw(bufferGraphics);
+
+		g.drawImage(buffer, 0, 0, this);
+	}
+
+	public static void main(String[] args) {
+		new Controlador();
+	}
+
+	@Override
+	public void keyTyped(KeyEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void keyReleased(KeyEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+
 }
