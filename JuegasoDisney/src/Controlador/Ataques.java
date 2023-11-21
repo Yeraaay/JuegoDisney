@@ -8,7 +8,7 @@ import javax.swing.ImageIcon;
 public class Ataques {
 
 	int x, y; // Posición de Mickey
-	Image[] images; // Array de imágenes de Mickey
+	Image[] images; // Array de imágenes de ataque
 	int currentFrame; // Índice de la imagen actual
 	
 	public Ataques() {
@@ -18,8 +18,8 @@ public class Ataques {
 		this.x = x;
 		this.y = y;
 
-		// Cargar la secuencia de imágenes de Mickey
-		images = new Image[4]; // Supongamos que tenemos 4 imágenes de la animación
+		// Cargar la secuencia de imágenes del ataque
+		images = new Image[5]; // Supongamos que tenemos 5 imágenes de la animación
 
 		for (int i = 0; i < images.length; i++) {
 			try {
