@@ -38,8 +38,11 @@ public class Controlador extends JFrame implements Runnable, KeyListener {
     private int fondoHeight; // Alto de la imagen de fondo
     private int fondoOffsetX = 0; // Desplazamiento horizontal del fondo
     private int fondoOffsetY = 0; // Desplazamiento vertical del fondo
-	
-	
+    int speed = 15; // Define la velocidad de movimiento
+    private boolean wPresionada = false;
+    private boolean aPresionada = false;
+    private boolean sPresionada = false;
+    private boolean dPresionada = false;
 	
 	public Controlador() {
 		mickey = new MickeyMouse(ANCHURA / 2, ALTURA /2);
@@ -153,29 +156,35 @@ public class Controlador extends JFrame implements Runnable, KeyListener {
 	public void keyPressed(KeyEvent e) {
 	    int key = e.getKeyCode();
 
-	    int speed = 25; // Define la velocidad de movimiento
+	    
 
 	    if (key == KeyEvent.VK_W) {
 //	        mickey.restarY(); // Mover hacia arriba
 //	        ataque.restarY(); // Mover hacia arriba
 	        // Actualizar offsetY para desplazar el fondo hacia abajo
 	        fondoOffsetY -= speed;
+	        wPresionada = true;
 	    } else if (key == KeyEvent.VK_S) {
 //	        mickey.sumarY(); // Mover hacia abajo
 //	        ataque.sumarY(); // Mover hacia abajo
 	        // Actualizar offsetY para desplazar el fondo hacia arriba
 	        fondoOffsetY += speed;
+	        sPresionada = true;
 	    } else if (key == KeyEvent.VK_A) {
 //	        mickey.restarX(); // Mover hacia la izquierda
 //	        ataque.restarX(); // Mover hacia la izquierda
 	        // Actualizar offsetX para desplazar el fondo hacia la derecha
 	        fondoOffsetX -= speed;
+	        aPresionada = true;
 	    } else if (key == KeyEvent.VK_D) {
 //	        mickey.sumarX(); // Mover hacia la derecha
 //	        ataque.sumarX(); // Mover hacia la derecha
 	        // Actualizar offsetX para desplazar el fondo hacia la izquierda
 	        fondoOffsetX += speed;
+	        dPresionada = true;
 	    }
+	    moverEnDiagonal();
+
 	}
 
 
@@ -221,10 +230,38 @@ public class Controlador extends JFrame implements Runnable, KeyListener {
 
 	@Override
 	public void keyReleased(KeyEvent e) {
-		// TODO Auto-generated method stub
-		
-	}
+		int key = e.getKeyCode();
 
+        if (key == KeyEvent.VK_W) {
+            wPresionada = false;
+        } else if (key == KeyEvent.VK_A) {
+            aPresionada = false;
+        } else if (key == KeyEvent.VK_S) {
+            sPresionada = false;
+        } else if (key == KeyEvent.VK_D) {
+            dPresionada = false;
+        }
+		moverEnDiagonal();
+	}
+	private void moverEnDiagonal() {
+        // Lógica para el movimiento en diagonal
+        if (wPresionada && dPresionada) {
+            fondoOffsetY -= speed/2;
+            fondoOffsetX += speed/2;
+        } else if (wPresionada && aPresionada) {
+            fondoOffsetY -= speed/2;
+            fondoOffsetX -= speed/2;
+        } else if (sPresionada && aPresionada) {
+            fondoOffsetY += speed/2;
+            fondoOffsetX -= speed/2;
+        } else if (sPresionada && dPresionada) {
+            fondoOffsetY += speed/2;
+            fondoOffsetX += speed/2;
+        }
+
+        // Actualizar las coordenadas del fondo según sea necesario
+        // fondoOffsetX y fondoOffsetY deben usarse en tu lógica de dibujo o movimiento del fondo.
+    }
 
 
 }
