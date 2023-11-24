@@ -58,7 +58,7 @@ public class Controlador extends JFrame implements Runnable, KeyListener {
 		buffer = new BufferedImage(ANCHURA, ALTURA, BufferedImage.TYPE_INT_RGB);
 		
         try {
-            fondoImage = ImageIO.read(new File("DisneySprite/Mapa/sueloMadera.png")); // Cambia la ruta por la de tu imagen
+            fondoImage = ImageIO.read(new File("DisneySprite/Mapa/mapav2.png")); // Cambia la ruta por la de tu imagen
             fondoWidth = fondoImage.getWidth();
             fondoHeight = fondoImage.getHeight();
         } catch (IOException e) {
