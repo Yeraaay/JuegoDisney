@@ -12,7 +12,8 @@ public class MickeyMouse {
 	public static Image[] images; // Array de imágenes de Mickey
 	public static int currentFrame; // Índice de la imagen actual
 	public static Rectangle mickeyBounds;
-	
+	private static int vida;
+    private static int vidaMaxima;
 	
 	//Métodos (Getter y Setter)
 	public static int getX() {
@@ -54,25 +55,55 @@ public class MickeyMouse {
 	public static void setMickeyBounds(Rectangle mickeyBounds) {
 		MickeyMouse.mickeyBounds = mickeyBounds;
 	}
+	public int getVida() {
+        return vida;
+    }
 
+    public void setVida(int vida) {
+        MickeyMouse.vida = vida;
+    }
+
+    public int getVidaMaxima() {
+        return vidaMaxima;
+    }
+
+    public void setVidaMaxima(int vidaMaxima) {
+        MickeyMouse.vidaMaxima = vidaMaxima;
+    }
+
+    public void recibirDanio(int cantidadDanio) {
+        vida -= cantidadDanio;
+
+        // Asegurarse de que la vida no sea menor que 0
+        vida = Math.max(0, vida);
+    }
+
+    public void curar(int cantidadCura) {
+        vida += cantidadCura;
+
+        // Asegurarse de que la vida no supere la vida máxima
+        vida = Math.min(vida, vidaMaxima);
+    }
 	public MickeyMouse(int x, int y) {
-		MickeyMouse.x = x;
-		MickeyMouse.y = y;
+        MickeyMouse.x = x;
+        MickeyMouse.y = y;
+        vida = 1000; // Inicializar la vida
+        vidaMaxima = 1000; // Establecer la vida máxima
 
-		// Cargar la secuencia de imágenes de Mickey
-		images = new Image[4]; // Supongamos que tenemos 4 imágenes de la animación
+        // Cargar la secuencia de imágenes de Mickey
+        images = new Image[4]; // Supongamos que tenemos 4 imágenes de la animación
 
-		for (int i = 0; i < images.length; i++) {
-			try {
-				ImageIcon icon = new ImageIcon("DisneySprite//MickeyMouse//MickeyMouse" + (i+1) + ".png");
-				images[i] = icon.getImage();
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
+        for (int i = 0; i < images.length; i++) {
+            try {
+                ImageIcon icon = new ImageIcon("DisneySprite//MickeyMouse//MickeyMouse" + (i + 1) + ".png");
+                images[i] = icon.getImage();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
 
-		currentFrame = 0; // Empezamos desde la primera imagen
-	}
+        currentFrame = 0; // Empezamos desde la primera imagen
+    }
 
 	public void move(int newX, int newY) {
 		// Método para cambiar la posición de Mickey
@@ -119,9 +150,22 @@ public class MickeyMouse {
 	}
 
 	public void draw(Graphics g) {
-		// Método para dibujar a Mickey con la imagen actual de la animación
-		g.drawImage(images[currentFrame], x, y, null);
-	}
+        // Método para dibujar a Mickey con la imagen actual de la animación
+        g.drawImage(images[currentFrame], x, y, null);
 
+        // Dibujar la barra de vida debajo de Mickey
+        int barraVidaWidth = 50; // Ancho de la barra de vida
+        int barraVidaHeight = 10; // Altura de la barra de vida
+        int barraVidaX = x; // Posición X de la barra de vida
+        int barraVidaY = y + images[currentFrame].getHeight(null) + 5; // Posición Y de la barra de vida
 
+        // Calcular la longitud de la barra de vida proporcional a la vida actual
+        int longitudBarraVida = (int) ((double) vida / vidaMaxima * barraVidaWidth);
+
+        // Dibujar la barra de vida
+        g.drawRect(barraVidaX, barraVidaY, barraVidaWidth, barraVidaHeight);
+        g.fillRect(barraVidaX, barraVidaY, longitudBarraVida, barraVidaHeight);
+    }
 }
+
+

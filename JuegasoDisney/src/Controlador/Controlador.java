@@ -13,6 +13,7 @@ import java.util.List;
 
 import javax.imageio.ImageIO;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 
 /**
  * @author Yeray Moraleda, Jesús Guijarro, Enrique Bellido
@@ -22,7 +23,7 @@ public class Controlador extends JFrame implements Runnable, KeyListener {
 	
 	private final int ANCHURA = 1920;
 	private final int ALTURA= 1080;
-
+	private int vidaMickey = 1000;
 	private static final long serialVersionUID = 1L;
 	private MickeyMouse mickey;
 	private List<Hienas> hiena = new ArrayList<Hienas>();
@@ -56,6 +57,7 @@ public class Controlador extends JFrame implements Runnable, KeyListener {
 		hiena.add(new Hienas(200, 800));
 		hiena.add(new Hienas(200, 900));
 		hiena.add(new Hienas(200, 1000));
+		inicializarHienas();
 		ataque = new Ataques((ANCHURA/2) -55, (ALTURA / 2) -40);
 		
 		buffer = new BufferedImage(ANCHURA, ALTURA, BufferedImage.TYPE_INT_RGB);
@@ -87,7 +89,68 @@ public class Controlador extends JFrame implements Runnable, KeyListener {
 		Thread hilo = new Thread(this);
 		hilo.start();
 	}
+	private void inicializarHienas() {
+	    // Limpiar la lista actual de hienas
+	    hiena.clear();
 
+	    // Generar 20 hienas en posiciones aleatorias alrededor de Mickey, pero más lejos
+	    for (int i = 0; i < 20; i++) {
+	        Hienas nuevaHiena = generarHienaAleatoria();
+
+	        // Verificar colisión con otras hienas y ajustar la posición si es necesario
+	        while (nuevaHiena.colisionaConOtrasHienas(hiena)) {
+	            nuevaHiena = generarHienaAleatoria();
+	        }
+
+	        hiena.add(nuevaHiena);
+	    }
+	}
+	private Hienas generarHienaAleatoria() {
+	    int mickeyX = MickeyMouse.getX();
+	    int mickeyY = MickeyMouse.getY();
+
+	    // Generar coordenadas aleatorias alrededor de Mickey desde todas las direcciones
+	    int direccion = (int) (Math.random() * 8); // 0-3: izquierda, derecha, arriba, abajo, 4-7: diagonales
+	    int nuevaX = 0;
+	    int nuevaY = 0;
+
+	    switch (direccion) {
+	        case 0: // Izquierda
+	            nuevaX = mickeyX - (int) (Math.random() * 1000 + 200);
+	            nuevaY = mickeyY + (int) (Math.random() * 1000 - 200);
+	            break;
+	        case 1: // Derecha
+	            nuevaX = mickeyX + (int) (Math.random() * 1000 + 200);
+	            nuevaY = mickeyY + (int) (Math.random() * 1000 - 200);
+	            break;
+	        case 2: // Arriba
+	            nuevaX = mickeyX + (int) (Math.random() * 1000 - 200);
+	            nuevaY = mickeyY - (int) (Math.random() * 1000+ 200);
+	            break;
+	        case 3: // Abajo
+	            nuevaX = mickeyX + (int) (Math.random() * 1000 - 200);
+	            nuevaY = mickeyY + (int) (Math.random() * 1000 + 200);
+	            break;
+	        case 4: // Diagonal superior izquierda
+	            nuevaX = mickeyX - (int) (Math.random() * 1000 + 200);
+	            nuevaY = mickeyY - (int) (Math.random() * 1000 + 200);
+	            break;
+	        case 5: // Diagonal superior derecha
+	            nuevaX = mickeyX + (int) (Math.random() * 1000 + 200);
+	            nuevaY = mickeyY - (int) (Math.random() * 1000 + 200);
+	            break;
+	        case 6: // Diagonal inferior izquierda
+	            nuevaX = mickeyX - (int) (Math.random() * 1000 + 200);
+	            nuevaY = mickeyY + (int) (Math.random() * 1000 + 200);
+	            break;
+	        case 7: // Diagonal inferior derecha
+	            nuevaX = mickeyX + (int) (Math.random() * 1000 + 200);
+	            nuevaY = mickeyY + (int) (Math.random() * 1000 + 200);
+	            break;
+	    }
+
+	    return new Hienas(nuevaX, nuevaY);
+	}
 	public void run() {
 		while (true) {
 			contadorVelocidad = contadorVelocidad + 5;
@@ -98,6 +161,32 @@ public class Controlador extends JFrame implements Runnable, KeyListener {
 
                 if (MickeyMouse.colisionaCon(hiena)) {
                     hiena.reducirVida(10);
+                    vidaMickey -= 2;
+                }
+            }
+            if (vidaMickey <= 0) {
+                // Mostrar JOptionPane
+                int opcion = JOptionPane.showOptionDialog(
+                        this,
+                        "¡Mickey ha muerto! ¿Desea reiniciar el juego?",
+                        "Game Over",
+                        JOptionPane.YES_NO_OPTION,
+                        JOptionPane.QUESTION_MESSAGE,
+                        null,
+                        new Object[]{"Reiniciar", "Salir"},
+                        "Reiniciar");
+
+                if (opcion == JOptionPane.YES_OPTION) {
+                    reiniciarJuego(); // Reiniciar el juego
+                } else {
+                    System.exit(0); // Salir del juego
+                }
+            }
+            for (int i = 0; i < hiena.size(); i++) {
+                Hienas hienaActual = hiena.get(i);
+                if (hienaActual.getVida() <= 0) {
+                    // Generar nueva hiena aleatoria
+                    hiena.set(i, generarHienaAleatoria());
                 }
             }
             
@@ -148,7 +237,25 @@ public class Controlador extends JFrame implements Runnable, KeyListener {
 			}
 		}
 	}
+	private void reiniciarJuego() {
+	    // Reiniciar la posición de Mickey
+	    MickeyMouse.setX(ANCHURA / 2);
+	    MickeyMouse.setY(ALTURA / 2);
+	    reiniciarHienas();
+	    // Reiniciar la vida de Mickey
+	    vidaMickey = 1000;
 
+	    // Reiniciar otras variables y estados del juego según sea necesario
+	}
+	private void reiniciarHienas() {
+        // Limpiar la lista actual de hienas
+        hiena.clear();
+
+        // Volver a generar 20 hienas en posiciones aleatorias alrededor de Mickey, pero más lejos
+        for (int i = 0; i < 20; i++) {
+            hiena.add(generarHienaAleatoria());
+        }
+    }
 	public void update(Graphics g) {
 		paint(g);
 	}
@@ -260,7 +367,7 @@ public class Controlador extends JFrame implements Runnable, KeyListener {
         }
 
         // Actualizar las coordenadas del fondo según sea necesario
-        // fondoOffsetX y fondoOffsetY deben usarse en tu lógica de dibujo o movimiento del fondo.
+        // fondoOffsetX y fondoOffsetY deben usarse en tu lógica de dibujo o movimiento del fondo
     }
 
 
