@@ -160,8 +160,8 @@ public class Hienas {
             g.drawImage(images[currentFrame], x, y, null);
         }
 
-        g.setColor(Color.red);
-        g.fillRect(x, y - 10, getVida(), 5); // Barra de vida
+        //g.setColor(Color.red);
+        //g.fillRect(x, y - 10, getVida(), 5); // Barra de vida
     }
 
 
