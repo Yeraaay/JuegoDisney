@@ -9,9 +9,9 @@ import javax.swing.ImageIcon;
 
 public class Hienas {
 
-	int x, y; // Posición de la hiena
-	Image[] images; // Array de imágenes de la hiena
-	Image[] imagenMuerte; // Array de imágenes de la hiena cuando su vida disminuye a 0
+	private int x, y; // Posición de la hiena
+	private Image[] images; // Array de imágenes de la hiena
+	private Image[] imagenMuerte; // Array de imágenes de la hiena cuando su vida disminuye a 0
 	private int currentFrame; // Índice de la imagen actual
 	private int currentFrameMuerte; // Índice de la imagen actual
 	private int vida;
@@ -81,14 +81,14 @@ public class Hienas {
 	// Método para que la hiena se mueva hacia la posición de la hiena
 	public void moverHacia(int targetX, int targetY) {
 		if (this.x < targetX) {
-			this.x++;
+			this.x+=3;
 		} else if (this.x > targetX) {
-			this.x--;
+			this.x-=3;
 		}
 		if (this.y < targetY) {
-			this.y++;
+			this.y+=3;
 		} else if (this.y > targetY) {
-			this.y--;
+			this.y-=3;
 		}
 	}
 
