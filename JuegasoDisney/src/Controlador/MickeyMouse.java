@@ -1,5 +1,6 @@
 package Controlador;
 
+import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.Rectangle;
@@ -8,36 +9,38 @@ import javax.swing.ImageIcon;
 
 public class MickeyMouse {
 
-	public static int x, y; // Posición de Mickey
-	public static Image[] images; // Array de imágenes de Mickey
+	public int x, y; // Posición de Mickey
+	public  Image[] images; // Array de imágenes de Mickey
 	public static int currentFrame; // Índice de la imagen actual
 	public static Rectangle mickeyBounds;
 	private static int vida;
     private static int vidaMaxima;
+    private int longitudBarraVida;
+
 	
 	//Métodos (Getter y Setter)
-	public static int getX() {
+	public  int getX() {
 		return x;
 	}
 
-	public static void setX(int x) {
-		MickeyMouse.x = x;
+	public  void setX(int x) {
+		this.x = x;
 	}
 
-	public static int getY() {
+	public int getY() {
 		return y;
 	}
 
-	public static void setY(int y) {
-		MickeyMouse.y = y;
+	public void setY(int y) {
+		this.y = y;
 	}
 
-	public static Image[] getImages() {
+	public Image[] getImages() {
 		return images;
 	}
 
-	public static void setImages(Image[] images) {
-		MickeyMouse.images = images;
+	public void setImages(Image[] images) {
+		this.images = images;
 	}
 
 	public static int getCurrentFrame() {
@@ -76,7 +79,12 @@ public class MickeyMouse {
 
         // Asegurarse de que la vida no sea menor que 0
         vida = Math.max(0, vida);
+
+        // Calcular la longitud de la barra de vida proporcional al nuevo valor de vida
+        int barraVidaWidth = 50; // Ancho de la barra de vida
+        longitudBarraVida = (int) ((double) vida / vidaMaxima * barraVidaWidth);
     }
+
 
     public void curar(int cantidadCura) {
         vida += cantidadCura;
@@ -85,8 +93,8 @@ public class MickeyMouse {
         vida = Math.min(vida, vidaMaxima);
     }
 	public MickeyMouse(int x, int y) {
-        MickeyMouse.x = x;
-        MickeyMouse.y = y;
+        this.x = x;
+        this.y = y;
         vida = 1000; // Inicializar la vida
         vidaMaxima = 1000; // Establecer la vida máxima
 
@@ -107,18 +115,18 @@ public class MickeyMouse {
 
 	public void move(int newX, int newY) {
 		// Método para cambiar la posición de Mickey
-		MickeyMouse.x = newX;
-		MickeyMouse.y = newY;
+		this.x = newX;
+		this.y = newY;
 	}
 	
 	//Método para detectar la colision entre 2 objetos
-	public static boolean colisionaCon(Hienas hiena) {
-        // Verificar colisión entre Mickey y la hiena
-        Rectangle mickeyBounds = new Rectangle(x, y, images[currentFrame].getWidth(null), images[currentFrame].getHeight(null));
-        Rectangle hienaBounds = new Rectangle(hiena.getX(), hiena.getY(), hiena.getImages()[0].getWidth(null), hiena.getImages()[0].getHeight(null));
+	public boolean colisionaCon(Hienas hiena) {
+	    // Verificar colisión entre Mickey y la hiena
+	    mickeyBounds = new Rectangle(x, y, images[currentFrame].getWidth(null), images[currentFrame].getHeight(null));
+	    Rectangle hienaBounds = new Rectangle(hiena.getX(), hiena.getY(), hiena.getImages()[0].getWidth(null), hiena.getImages()[0].getHeight(null));
 
-        return mickeyBounds.intersects(hienaBounds); // Devuelve true si hay colisión, de lo contrario, false
-    }
+	    return mickeyBounds.intersects(hienaBounds); // Devuelve true si hay colisión, de lo contrario, false
+	}
 	
 
     public int restarX() {
@@ -150,22 +158,27 @@ public class MickeyMouse {
 	}
 
 	public void draw(Graphics g) {
-        // Método para dibujar a Mickey con la imagen actual de la animación
-        g.drawImage(images[currentFrame], x, y, null);
+	    // Método para dibujar a Mickey con la imagen actual de la animación
+	    g.drawImage(images[currentFrame], x, y, null);
 
-        // Dibujar la barra de vida debajo de Mickey
-        int barraVidaWidth = 50; // Ancho de la barra de vida
-        int barraVidaHeight = 10; // Altura de la barra de vida
-        int barraVidaX = x; // Posición X de la barra de vida
-        int barraVidaY = y + images[currentFrame].getHeight(null) + 5; // Posición Y de la barra de vida
+	    // Dibujar la barra de vida debajo de Mickey
+	    int barraVidaWidth = 50; // Ancho de la barra de vida
+	    int barraVidaHeight = 10; // Altura de la barra de vida
+	    int barraVidaX = x; // Posición X de la barra de vida
+	    int barraVidaY = y + images[currentFrame].getHeight(null) + 5; // Posición Y de la barra de vida
 
-        // Calcular la longitud de la barra de vida proporcional a la vida actual
-        int longitudBarraVida = (int) ((double) vida / vidaMaxima * barraVidaWidth);
 
-        // Dibujar la barra de vida
-        g.drawRect(barraVidaX, barraVidaY, barraVidaWidth, barraVidaHeight);
-        g.fillRect(barraVidaX, barraVidaY, longitudBarraVida, barraVidaHeight);
-    }
+	    longitudBarraVida = (int) ((double) vida / vidaMaxima * barraVidaWidth);
+
+	    // Dibujar la barra de vida
+	    g.setColor(Color.RED); // Establecer el color de la barra de vida (puedes ajustar esto)
+	    g.fillRect(barraVidaX, barraVidaY, longitudBarraVida, barraVidaHeight);
+
+	    // Dibujar el contorno de la barra de vida
+	    g.setColor(Color.BLACK); // Establecer el color del contorno (puedes ajustar esto)
+	    g.drawRect(barraVidaX, barraVidaY, barraVidaWidth, barraVidaHeight);
+	}
+
 }
 
 
