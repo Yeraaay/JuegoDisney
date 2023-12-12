@@ -2,7 +2,6 @@ package Controlador;
 
 import java.awt.Color;
 import java.awt.Graphics;
-import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.Rectangle;
 
@@ -11,28 +10,23 @@ import javax.swing.ImageIcon;
 public class MickeyMouse {
 
 	public int x, y; // Posición de Mickey
-	public  Image[] images; // Array de imágenes de Mickey
+	public static Image[] imagesIzquierda = new Image[4]; // Array de imágenes para la izquierda de Mickey
+	public static Image[] imagesDerecha = new Image[4]; // Array de imágenes para la derecha de Mickey
+	public static Image[] images = new Image[4];
 	public static int currentFrame; // Índice de la imagen actual
 	public static Rectangle mickeyBounds;
 	private static int vida;
-    private static int vidaMaxima;
-    private int longitudBarraVida;
-    
-    public Direccion direccion = Direccion.DERECHA;
+	private static int vidaMaxima;
+	private int longitudBarraVida;
+	public boolean direccion = true;
 
-	
-	//Métodos (Getter y Setter)
-	public Direccion getDireccion() {
-		return direccion;
-	}
 
-	public void setDireccion(Direccion direccion) {
-		this.direccion = direccion;
-	}
-    
-    public  int getX() {
+
+	//Métodos (Getter y Setter)    
+	public  int getX() {
 		return x;
 	}
+
 	public  void setX(int x) {
 		this.x = x;
 	}
@@ -45,12 +39,11 @@ public class MickeyMouse {
 		this.y = y;
 	}
 
-	public Image[] getImages() {
+	public static Image[] getImages() {
 		return images;
 	}
-
-	public void setImages(Image[] images) {
-		this.images = images;
+	public static void setImages(Image[] images) {
+		MickeyMouse.images = images;
 	}
 
 	public static int getCurrentFrame() {
@@ -69,99 +62,127 @@ public class MickeyMouse {
 		MickeyMouse.mickeyBounds = mickeyBounds;
 	}
 	public int getVida() {
-        return vida;
-    }
+		return vida;
+	}
 
-    public void setVida(int vida) {
-        MickeyMouse.vida = vida;
-    }
+	public void setVida(int vida) {
+		MickeyMouse.vida = vida;
+	}
 
-    public int getVidaMaxima() {
-        return vidaMaxima;
-    }
+	public int getVidaMaxima() {
+		return vidaMaxima;
+	}
 
-    public void setVidaMaxima(int vidaMaxima) {
-        MickeyMouse.vidaMaxima = vidaMaxima;
-    }
-    
-    public enum Direccion {
-    	DERECHA, IZQUIERDA;
-    }
+	public void setVidaMaxima(int vidaMaxima) {
+		MickeyMouse.vidaMaxima = vidaMaxima;
+	}
 
-    public void recibirDanio(int cantidadDanio) {
-        vida -= cantidadDanio;
+	public boolean isDireccion() {
+		return direccion;
+	}
+	public void setDireccion(boolean direccion) {
+		this.direccion = direccion;
+	}
 
-        // Asegurarse de que la vida no sea menor que 0
-        vida = Math.max(0, vida);
+	public void recibirDanio(int cantidadDanio) {
+		vida -= cantidadDanio;
 
-        // Calcular la longitud de la barra de vida proporcional al nuevo valor de vida
-        int barraVidaWidth = 50; // Ancho de la barra de vida
-        longitudBarraVida = (int) ((double) vida / vidaMaxima * barraVidaWidth);
-    }
+		// Asegurarse de que la vida no sea menor que 0
+		vida = Math.max(0, vida);
+
+		// Calcular la longitud de la barra de vida proporcional al nuevo valor de vida
+		int barraVidaWidth = 50; // Ancho de la barra de vida
+		longitudBarraVida = (int) ((double) vida / vidaMaxima * barraVidaWidth);
+	}
 
 
-    public void curar(int cantidadCura) {
-        vida += cantidadCura;
+	public void curar(int cantidadCura) {
+		vida += cantidadCura;
 
-        // Asegurarse de que la vida no supere la vida máxima
-        vida = Math.min(vida, vidaMaxima);
-    }
+		// Asegurarse de que la vida no supere la vida máxima
+		vida = Math.min(vida, vidaMaxima);
+	}
+
+	//CONSTRUCTOR DE MICKEY MOUSE
 	public MickeyMouse(int x, int y) {
-        this.x = x;
-        this.y = y;
-        vida = 1000; // Inicializar la vida
-        vidaMaxima = 1000; // Establecer la vida máxima
+		this.x = x;
+		this.y = y;
+		MickeyMouse.vida = 100000; // Inicializar la vida
+		MickeyMouse.vidaMaxima = 100000; // Establecer la vida máxima
+		this.direccion = true;
+		MickeyMouse.setImagesIzquierda(imagesIzquierda);
+		MickeyMouse.setImagesDerecha(imagesDerecha);
+		this.images = getImagesDerecha();
+	}
 
-        // Cargar la secuencia de imágenes de Mickey
-        images = new Image[4]; // Supongamos que tenemos 4 imágenes de la animación
+	public static Image[] getImagesIzquierda() {
+		return imagesIzquierda;
+	}
 
-        for (int i = 0; i < images.length; i++) {
-            try {
-                ImageIcon icon = new ImageIcon("DisneySprite//MickeyMouse//MickeyMouse" + (i + 1) + ".png");
-                images[i] = icon.getImage();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
+	public static void setImagesIzquierda(Image[] imagesIzquierda) {
+		for (int i = 0; i < imagesIzquierda.length; i++) {
+			try {
+				ImageIcon icon = new ImageIcon("DisneySprite//MickeyMouse//MickeyMouseIzquierda" + (i + 1) + ".png");
+				imagesIzquierda[i] = icon.getImage();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			currentFrame = 0;
+		}
+		
+	}
 
-        currentFrame = 0; // Empezamos desde la primera imagen
-    }
+	public static Image[] getImagesDerecha() {
+		return imagesDerecha;
+	}
+
+	public static void setImagesDerecha(Image[] imagesDerecha) {
+		for (int i = 0; i < imagesDerecha.length; i++) {
+			try {
+				ImageIcon icon = new ImageIcon("DisneySprite//MickeyMouse//MickeyMouse" + (i + 1) + ".png");
+				imagesDerecha[i] = icon.getImage();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			currentFrame = 0;
+		}
+	}
 
 	public void move(int newX, int newY) {
 		// Método para cambiar la posición de Mickey
 		this.x = newX;
 		this.y = newY;
 	}
-	
+
 	//Método para detectar la colision entre 2 objetos
 	public boolean colisionaCon(Hienas hiena) {
-	    // Verificar colisión entre Mickey y la hiena
-	    mickeyBounds = new Rectangle(x, y, images[currentFrame].getWidth(null), images[currentFrame].getHeight(null));
-	    Rectangle hienaBounds = new Rectangle(hiena.getX(), hiena.getY(), hiena.getImages()[0].getWidth(null), hiena.getImages()[0].getHeight(null));
+		// Verificar colisión entre Mickey y la hiena
+		mickeyBounds = new Rectangle(x, y, MickeyMouse.getImages()[currentFrame].getWidth(null), MickeyMouse.getImages()[currentFrame].getHeight(null));
+		Rectangle hienaBounds = new Rectangle(hiena.getX(), hiena.getY(), hiena.getImages()[0].getWidth(null), hiena.getImages()[0].getHeight(null));
 
-	    return mickeyBounds.intersects(hienaBounds); // Devuelve true si hay colisión, de lo contrario, false
+		return mickeyBounds.intersects(hienaBounds); // Devuelve true si hay colisión, de lo contrario, false
 	}
-	
 
-    public int restarX() {
-    	x = x-10;
-        return x;
-    }
 
-    public int restarY() {
-    	y = y-10;
-        return y;
-    }
-    
-    public int sumarX() {
-    	x = x+10;
-        return x;
-    }
+	public int restarX() {
+		x = x-10;
+		return x;
+	}
 
-    public int sumarY() {
-    	y = y+10;
-        return y;
-    }
+	public int restarY() {
+		y = y-10;
+		return y;
+	}
+
+	public int sumarX() {
+		x = x+10;
+		return x;
+	}
+
+	public int sumarY() {
+		y = y+10;
+		return y;
+	}
 
 	public void updateAnimation() {
 		// Método para actualizar la animación de Mickey (cambiar la imagen actual)
@@ -173,34 +194,24 @@ public class MickeyMouse {
 
 	// Método para dibujar a Mickey con la imagen actual de la animación	    
 	public void draw(Graphics g) {
-        Graphics2D g2d = (Graphics2D) g.create();
-
-        if (direccion == Direccion.IZQUIERDA) {
-            // Si va hacia la izquierda, reflejamos la imagen horizontalmente
-            g2d.drawImage(images[currentFrame], x + images[currentFrame].getWidth(null), y, -images[currentFrame].getWidth(null), images[currentFrame].getHeight(null), null);
-        } else {
-            // Si va hacia la derecha, dibujamos la imagen normalmente
-            g2d.drawImage(images[currentFrame], x, y, null);
-        }
-
-        g2d.dispose();
-	    
-	    // Dibujar la barra de vida debajo de Mickey
-	    int barraVidaWidth = 50; // Ancho de la barra de vida
-	    int barraVidaHeight = 10; // Altura de la barra de vida
-	    int barraVidaX = x; // Posición X de la barra de vida
-	    int barraVidaY = y + images[currentFrame].getHeight(null) + 5; // Posición Y de la barra de vida
+		g.drawImage(images[currentFrame], x, y, null);
+		
+		// Dibujar la barra de vida debajo de Mickey
+		int barraVidaWidth = 50; // Ancho de la barra de vida
+		int barraVidaHeight = 10; // Altura de la barra de vida
+		int barraVidaX = x + 25; // Posición X de la barra de vida
+		int barraVidaY = y + images[currentFrame].getHeight(null) + 5; // Posición Y de la barra de vida
 
 
-	    longitudBarraVida = (int) ((double) vida / vidaMaxima * barraVidaWidth);
+		longitudBarraVida = (int) ((double) vida / vidaMaxima * barraVidaWidth);
 
-	    // Dibujar la barra de vida
-	    g.setColor(Color.GREEN); // Establecer el color de la barra de vida (puedes ajustar esto)
-	    g.fillRect(barraVidaX, barraVidaY, longitudBarraVida, barraVidaHeight);
+		// Dibujar la barra de vida
+		g.setColor(Color.GREEN); // Establecer el color de la barra de vida (puedes ajustar esto)
+		g.fillRect(barraVidaX, barraVidaY, longitudBarraVida, barraVidaHeight);
 
-	    // Dibujar el contorno de la barra de vida
-	    g.setColor(Color.BLACK); // Establecer el color del contorno (puedes ajustar esto)
-	    g.drawRect(barraVidaX, barraVidaY, barraVidaWidth, barraVidaHeight);
+		// Dibujar el contorno de la barra de vida
+		g.setColor(Color.BLACK); // Establecer el color del contorno (puedes ajustar esto)
+		g.drawRect(barraVidaX, barraVidaY, barraVidaWidth, barraVidaHeight);
 	}
 
 }
