@@ -32,7 +32,7 @@ public class Controlador extends JFrame implements Runnable, KeyListener {
 	int contadorVelocidad = 0;
 	int contadorAtaque = 0;
 	int contadorFinAtaque = 0;
-
+	private Corazon corazon;
 	private BufferedImage fondoImage; // Imagen de fondo
 	private int fondoWidth; // Ancho de la imagen de fondo
 	private int fondoHeight; // Alto de la imagen de fondo
@@ -48,7 +48,7 @@ public class Controlador extends JFrame implements Runnable, KeyListener {
 		setTitle("Disney's Survival");
 		setSize(1920, 1080);
 		setVisible(true);
-
+		corazon = new Corazon(0, 0);
 		addKeyListener(this); // Agregar el KeyListener al JFrame
 		setFocusable(true);
 		setFocusTraversalKeysEnabled(false);
@@ -57,7 +57,7 @@ public class Controlador extends JFrame implements Runnable, KeyListener {
 		inicializarHienas();
 		ataque = new Ataques((ANCHURA/2) -55, (ALTURA / 2) -40);
 		buffer = new BufferedImage(ANCHURA, ALTURA, BufferedImage.TYPE_INT_RGB);
-
+		corazon.generarPosicionAleatoria(mickey.getX(), mickey.getY(), ANCHURA, ALTURA);
 		try {
 			fondoImage = ImageIO.read(new File("DisneySprite/Mapa/mapav2.png")); // Cambia la ruta por la de tu imagen
 			fondoWidth = fondoImage.getWidth();
@@ -328,7 +328,7 @@ public class Controlador extends JFrame implements Runnable, KeyListener {
 
 			bufferGraphics.drawImage(fondoImage, -fondoOffsetX, -fondoOffsetY, this);
 		}
-
+		
 		mickey.draw(bufferGraphics);
 		for (Hienas hiena: hiena) {
 			hiena.draw(bufferGraphics);
@@ -337,7 +337,7 @@ public class Controlador extends JFrame implements Runnable, KeyListener {
 		//	    hiena.get(1).draw(bufferGraphics);
 		//	    hiena.get(2).draw(bufferGraphics);
 		ataque.draw(bufferGraphics);
-
+		corazon.draw(bufferGraphics);
 		g.drawImage(buffer, 0, 0, this);
 	}
 
