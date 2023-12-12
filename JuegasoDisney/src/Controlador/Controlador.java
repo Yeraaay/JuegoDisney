@@ -38,11 +38,11 @@ public class Controlador extends JFrame implements Runnable, KeyListener {
 	private int fondoHeight; // Alto de la imagen de fondo
 	private int fondoOffsetX = 0; // Desplazamiento horizontal del fondo
 	private int fondoOffsetY = 0; // Desplazamiento vertical del fondo
-	int speed = 10; // Define la velocidad de movimiento
-	private boolean wPresionada = false;
-	private boolean aPresionada = false;
-	private boolean sPresionada = false;
-	private boolean dPresionada = false;
+	int speed = 5; // Define la velocidad de movimiento
+	public boolean wPresionada = false;
+	public boolean aPresionada = false;
+	public boolean sPresionada = false;
+	public boolean dPresionada = false;
 
 	public Controlador() {
 		setTitle("Disney's Survival");
@@ -138,9 +138,10 @@ public class Controlador extends JFrame implements Runnable, KeyListener {
 
 		return new Hienas(nuevaX, nuevaY);
 	}
+	
 	public void run() {
 		while (true) {
-			contadorVelocidad = contadorVelocidad + 5;
+			contadorVelocidad = contadorVelocidad + 2;
 
 			for (Hienas hiena : hiena) {
 				hiena.moverHacia(mickey.getX(), mickey.getY());
@@ -306,8 +307,10 @@ public class Controlador extends JFrame implements Runnable, KeyListener {
 			sPresionada = true;
 		} else if (key == KeyEvent.VK_A) {
 			aPresionada = true;
+			mickey.direccion = mickey.direccion.IZQUIERDA;
 		} else if (key == KeyEvent.VK_D) {
 			dPresionada = true;
+			mickey.direccion = mickey.direccion.DERECHA;
 		}
 	}
 
