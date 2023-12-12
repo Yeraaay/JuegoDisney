@@ -266,7 +266,7 @@ public class Controlador extends JFrame implements Runnable, KeyListener {
 			repaint();
 
 			try {
-				Thread.sleep(20);
+				Thread.sleep(5);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
