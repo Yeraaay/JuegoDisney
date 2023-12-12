@@ -2,6 +2,7 @@ package Controlador;
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.Rectangle;
 
@@ -16,13 +17,22 @@ public class MickeyMouse {
 	private static int vida;
     private static int vidaMaxima;
     private int longitudBarraVida;
+    
+    public Direccion direccion = Direccion.DERECHA;
 
 	
 	//Métodos (Getter y Setter)
-	public  int getX() {
-		return x;
+	public Direccion getDireccion() {
+		return direccion;
 	}
 
+	public void setDireccion(Direccion direccion) {
+		this.direccion = direccion;
+	}
+    
+    public  int getX() {
+		return x;
+	}
 	public  void setX(int x) {
 		this.x = x;
 	}
@@ -72,6 +82,10 @@ public class MickeyMouse {
 
     public void setVidaMaxima(int vidaMaxima) {
         MickeyMouse.vidaMaxima = vidaMaxima;
+    }
+    
+    public enum Direccion {
+    	DERECHA, IZQUIERDA;
     }
 
     public void recibirDanio(int cantidadDanio) {
@@ -157,10 +171,20 @@ public class MickeyMouse {
 		}
 	}
 
+	// Método para dibujar a Mickey con la imagen actual de la animación	    
 	public void draw(Graphics g) {
-	    // Método para dibujar a Mickey con la imagen actual de la animación
-	    g.drawImage(images[currentFrame], x, y, null);
+        Graphics2D g2d = (Graphics2D) g.create();
 
+        if (direccion == Direccion.IZQUIERDA) {
+            // Si va hacia la izquierda, reflejamos la imagen horizontalmente
+            g2d.drawImage(images[currentFrame], x + images[currentFrame].getWidth(null), y, -images[currentFrame].getWidth(null), images[currentFrame].getHeight(null), null);
+        } else {
+            // Si va hacia la derecha, dibujamos la imagen normalmente
+            g2d.drawImage(images[currentFrame], x, y, null);
+        }
+
+        g2d.dispose();
+	    
 	    // Dibujar la barra de vida debajo de Mickey
 	    int barraVidaWidth = 50; // Ancho de la barra de vida
 	    int barraVidaHeight = 10; // Altura de la barra de vida
@@ -171,7 +195,7 @@ public class MickeyMouse {
 	    longitudBarraVida = (int) ((double) vida / vidaMaxima * barraVidaWidth);
 
 	    // Dibujar la barra de vida
-	    g.setColor(Color.RED); // Establecer el color de la barra de vida (puedes ajustar esto)
+	    g.setColor(Color.GREEN); // Establecer el color de la barra de vida (puedes ajustar esto)
 	    g.fillRect(barraVidaX, barraVidaY, longitudBarraVida, barraVidaHeight);
 
 	    // Dibujar el contorno de la barra de vida
