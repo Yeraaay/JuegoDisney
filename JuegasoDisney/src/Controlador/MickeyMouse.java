@@ -95,20 +95,12 @@ public class MickeyMouse {
 		longitudBarraVida = (int) ((double) vida / vidaMaxima * barraVidaWidth);
 	}
 
-
-	public void curar(int cantidadCura) {
-		vida += cantidadCura;
-
-		// Asegurarse de que la vida no supere la vida máxima
-		vida = Math.min(vida, vidaMaxima);
-	}
-
 	//CONSTRUCTOR DE MICKEY MOUSE
 	public MickeyMouse(int x, int y) {
 		this.x = x;
 		this.y = y;
-		MickeyMouse.vida = 100000; // Inicializar la vida
-		MickeyMouse.vidaMaxima = 100000; // Establecer la vida máxima
+		MickeyMouse.vida = 1000; // Inicializar la vida
+		MickeyMouse.vidaMaxima = 1000; // Establecer la vida máxima
 		this.direccion = true;
 		MickeyMouse.setImagesIzquierda(imagesIzquierda);
 		MickeyMouse.setImagesDerecha(imagesDerecha);
@@ -161,6 +153,14 @@ public class MickeyMouse {
 		Rectangle hienaBounds = new Rectangle(hiena.getX(), hiena.getY(), hiena.getImages()[0].getWidth(null), hiena.getImages()[0].getHeight(null));
 
 		return mickeyBounds.intersects(hienaBounds); // Devuelve true si hay colisión, de lo contrario, false
+	}
+	
+	public boolean colisionaConCorason(Corazon corazon) {
+		// Verificar colisión entre Mickey y la hiena
+		mickeyBounds = new Rectangle(x, y, MickeyMouse.getImages()[currentFrame].getWidth(null), MickeyMouse.getImages()[currentFrame].getHeight(null));
+		Rectangle coraBounds = new Rectangle(corazon.getX(), corazon.getY(), corazon.getImagen()[0].getWidth(null), corazon.getImagen()[0].getHeight(null));
+
+		return mickeyBounds.intersects(coraBounds); // Devuelve true si hay colisión, de lo contrario, false
 	}
 
 
