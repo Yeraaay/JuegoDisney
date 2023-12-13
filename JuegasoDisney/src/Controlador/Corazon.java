@@ -11,6 +11,7 @@ public class Corazon {
     public static int currentFrame;
     private int velX = 0; // Velocidad en la dirección X
     private int velY = 0; // Velocidad en la dirección Y
+    
     public Corazon(int x, int y) {
         this.x = x;
         this.y = y;
@@ -27,8 +28,18 @@ public class Corazon {
 			currentFrame = 0;
 		}
     }
+    
+    
 
-    public static int getCurrentFrame() {
+    public Image[] getImagen() {
+		return imagen;
+	}
+
+	public void setImagen(Image[] imagen) {
+		this.imagen = imagen;
+	}
+
+	public static int getCurrentFrame() {
 		return currentFrame;
 	}
 
@@ -52,12 +63,13 @@ public class Corazon {
         return y;
     }
     public void updateAnimation() {
-		// Método para actualizar la animación de Mickey (cambiar la imagen actual)
+		// Método para actualizar la animación del corazon (cambiar la imagen actual)
 		currentFrame++;
 		if (currentFrame >= imagen.length) {
 			currentFrame = 0; // Reiniciamos la animación al llegar al final
 		}
 	}
+    
     public void draw(Graphics g) {
     	Graphics2D g2d = (Graphics2D) g;
         g2d.drawImage(imagen[currentFrame], x, y, null);
