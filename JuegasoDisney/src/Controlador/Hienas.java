@@ -211,8 +211,8 @@ public class Hienas {
 
 	public int reducirVida(int vidaQuitada) {
 		setVida(getVida() - vidaQuitada);
-		System.out.println(getVida());
-        if (getVida() <= 0 && !muerto) { // Verificar si la vida es 0 y la hiena no ha muerto ya
+		
+		if (getVida() <= 0 && !muerto) { // Verificar si la vida es 0 y la hiena no ha muerto ya
         	muerto = true; // Marcar que la hiena ha muerto para evitar que se repita la animación
             for (int i = 0; i < imagenMuerte.length; i++) {
                 try {

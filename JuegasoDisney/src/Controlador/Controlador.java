@@ -1,5 +1,8 @@
 package Controlador;
 
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -13,7 +16,9 @@ import java.util.List;
 
 import javax.imageio.ImageIO;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.SwingConstants;
 
 /**
  * @author Yeray Moraleda, Jesús Guijarro, Enrique Bellido
@@ -38,26 +43,30 @@ public class Controlador extends JFrame implements Runnable, KeyListener {
 	private int fondoHeight; // Alto de la imagen de fondo
 	private int fondoOffsetX = 0; // Desplazamiento horizontal del fondo
 	private int fondoOffsetY = 0; // Desplazamiento vertical del fondo
-	int speed = 5; // Define la velocidad de movimiento
+	int speed = 10; // Define la velocidad de movimiento
 	public boolean wPresionada = false;
 	public boolean aPresionada = false;
 	public boolean sPresionada = false;
 	public boolean dPresionada = false;
 
+	// Tiempo de partida
+	private int tiempoPartida = 60;
+	private boolean juegoActivo = true;
+	private JLabel labelTiempo;
+
 	public Controlador() {
 		setTitle("Disney's Survival");
 		setSize(1920, 1080);
 		setVisible(true);
-//		corazon = new Corazon(0, 0);
+		//		corazon = new Corazon(0, 0);
 		addKeyListener(this); // Agregar el KeyListener al JFrame
 		setFocusable(true);
 		setFocusTraversalKeysEnabled(false);
-		
+
 		mickey = new MickeyMouse(ANCHURA / 2, ALTURA /2);
-		inicializarHienas();
 		ataque = new Ataques((ANCHURA/2) -55, (ALTURA / 2) -40);
 		buffer = new BufferedImage(ANCHURA, ALTURA, BufferedImage.TYPE_INT_RGB);
-//		corazon.generarPosicionAleatoria(mickey.getX(), mickey.getY(), ANCHURA, ALTURA);
+		//		corazon.generarPosicionAleatoria(mickey.getX(), mickey.getY(), ANCHURA, ALTURA);
 		try {
 			fondoImage = ImageIO.read(new File("DisneySprite/Mapa/mapav2.png")); // Cambia la ruta por la de tu imagen
 			fondoWidth = fondoImage.getWidth();
@@ -67,22 +76,25 @@ public class Controlador extends JFrame implements Runnable, KeyListener {
 			fondoImage = null; // Manejo de error: si no se puede cargar la imagen, se asigna null
 		}
 
-
 		addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent we) {
 				System.exit(0);
 			}
 		});
-
+		
 
 		Thread hilo = new Thread(this);
 		hilo.start();
 	}
-	
+
+	public int getTiempoPartida() {
+		return tiempoPartida;
+	}
+
 	private void inicializarHienas() {
 
 		// Generar 20 hienas en posiciones aleatorias alrededor de Mickey, pero más lejos
-		for (int i = 0; i < 20; i++) {
+		for (int i = 0; i < 60; i++) {
 			Hienas nuevaHiena = generarHienaAleatoria();
 
 			// Verificar colisión con otras hienas y ajustar la posición si es necesario
@@ -93,7 +105,7 @@ public class Controlador extends JFrame implements Runnable, KeyListener {
 			hiena.add(nuevaHiena);
 		}
 	}
-	
+
 	private Hienas generarHienaAleatoria() {
 		int mickeyX = mickey.getX();
 		int mickeyY = mickey.getY();
@@ -140,7 +152,7 @@ public class Controlador extends JFrame implements Runnable, KeyListener {
 
 		return new Hienas(nuevaX, nuevaY);
 	}
-	
+
 	public void run() {
 		while (true) {
 			contadorVelocidad = contadorVelocidad + 2;
@@ -154,11 +166,11 @@ public class Controlador extends JFrame implements Runnable, KeyListener {
 					mickey.setVida(mickey.getVida()-2);
 				}
 			}
-			if (mickey.getVida() <= 0) {
+			if (mickey.getVida() <= 0 || tiempoPartida == 4200) {
 				// Mostrar JOptionPane
 				int opcion = JOptionPane.showOptionDialog(
 						this,
-						"¡Mickey ha muerto! ¿Desea reiniciar el juego?",
+						"GAME OVER ¿Desea reiniciar el juego?",
 						"Game Over",
 						JOptionPane.YES_NO_OPTION,
 						JOptionPane.QUESTION_MESSAGE,
@@ -172,24 +184,24 @@ public class Controlador extends JFrame implements Runnable, KeyListener {
 					System.exit(0); // Salir del juego
 				}
 			}
-			
+
 			for (int i = 0; i < hiena.size(); i++) {
-			    Hienas hienaActual = hiena.get(i);
-			    if (hienaActual.getVida() <= 0) {
-			        if (!hienaActual.isMuerto()) {
-			            // Si la hiena no ha sido marcada como muerta, realizar la animación de muerte
-			            hienaActual.reducirVida(0); // Esto marca a la hiena como muerta para que se inicie la animación
-			        } else {
-			            // Si la animación de muerte no ha terminado, seguir mostrando las imágenes de la muerte
-			            if (hienaActual.getCurrentFrameMuerte() < hienaActual.getImagenMuerte().length) {
-			                // Mostrar la imagen de la animación de muerte actual
-			                hienaActual.setCurrentFrameMuerte(hienaActual.getCurrentFrameMuerte() + 1);
-			            } else {
-			                // Si la animación ha terminado, reemplazar la hiena muerta con una nueva
-			                hiena.set(i, generarHienaAleatoria());
-			            }
-			        }
-			    }
+				Hienas hienaActual = hiena.get(i);
+				if (hienaActual.getVida() <= 0) {
+					if (!hienaActual.isMuerto()) {
+						// Si la hiena no ha sido marcada como muerta, realizar la animación de muerte
+						hienaActual.reducirVida(0); // Esto marca a la hiena como muerta para que se inicie la animación
+					} else {
+						// Si la animación de muerte no ha terminado, seguir mostrando las imágenes de la muerte
+						if (hienaActual.getCurrentFrameMuerte() < hienaActual.getImagenMuerte().length) {
+							// Mostrar la imagen de la animación de muerte actual
+							hienaActual.setCurrentFrameMuerte(hienaActual.getCurrentFrameMuerte() + 1);
+						} else {
+							// Si la animación ha terminado, reemplazar la hiena muerta con una nueva
+							hiena.set(i, generarHienaAleatoria());
+						}
+					}
+				}
 			}
 
 			for (int i = 0; i < hiena.size(); i++) {
@@ -201,6 +213,14 @@ public class Controlador extends JFrame implements Runnable, KeyListener {
 				}
 			}
 
+			if (contadorVelocidad % 70 == 0) {
+				tiempoPartida--;
+				System.out.println("Timepo restante: " + getTiempoPartida());
+			}
+
+			if (contadorVelocidad % 240 == 0) {
+				inicializarHienas();
+			}
 
 			if (contadorVelocidad % 10 == 0) {
 				mickey.updateAnimation();
@@ -222,28 +242,28 @@ public class Controlador extends JFrame implements Runnable, KeyListener {
 			}
 			if (wPresionada && !aPresionada && !dPresionada && fondoOffsetY>10) {
 				for (Hienas hiena : hiena) {
-					hiena.setY(hiena.getY()+speed*2);
+					hiena.setY(hiena.getY()+speed);
 					hiena.updateAnimation();
 				}
 				fondoOffsetY -= speed*2;
 
 			} else if (sPresionada && !aPresionada && !dPresionada && fondoOffsetY<3220) {
 				for (Hienas hiena : hiena) {
-					hiena.setY(hiena.getY()-speed*2);
+					hiena.setY(hiena.getY()-speed);
 					hiena.updateAnimation();
 				}
 				fondoOffsetY += speed*2;
 			}else if (aPresionada && !wPresionada && !sPresionada && fondoOffsetX>10){
 				mickey.setImages(mickey.getImagesIzquierda());
 				for (Hienas hiena : hiena) {
-					hiena.setX(hiena.getX()+speed*2);
+					hiena.setX(hiena.getX()+speed);
 					hiena.updateAnimation();
 				}
 				fondoOffsetX -= speed*2;
 			} else if (dPresionada && !wPresionada && !sPresionada && fondoOffsetX<5750) {
 				mickey.setImages(mickey.getImagesDerecha());
 				for (Hienas hiena : hiena) {
-					hiena.setX(hiena.getX()-speed*2);
+					hiena.setX(hiena.getX()-speed);
 					hiena.updateAnimation();
 				}
 				fondoOffsetX += speed*2;
@@ -287,7 +307,7 @@ public class Controlador extends JFrame implements Runnable, KeyListener {
 			repaint();
 
 			try {
-				Thread.sleep(50);
+				Thread.sleep(30);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
@@ -300,8 +320,6 @@ public class Controlador extends JFrame implements Runnable, KeyListener {
 		reiniciarHienas();
 		// Reiniciar la vida de Mickey
 		mickey.setVida(1000);
-
-		// Reiniciar otras variables y estados del juego según sea necesario
 	}
 	private void reiniciarHienas() {
 		// Limpiar la lista actual de hienas
@@ -318,7 +336,7 @@ public class Controlador extends JFrame implements Runnable, KeyListener {
 
 	public void keyPressed(KeyEvent e) {
 		int key = e.getKeyCode();
-		
+
 		if (key == KeyEvent.VK_W) {
 			wPresionada = true;
 		} else if (key == KeyEvent.VK_S) {
@@ -344,16 +362,13 @@ public class Controlador extends JFrame implements Runnable, KeyListener {
 
 			bufferGraphics.drawImage(fondoImage, -fondoOffsetX, -fondoOffsetY, this);
 		}
-		
+
 		mickey.draw(bufferGraphics);
 		for (Hienas hiena: hiena) {
 			hiena.draw(bufferGraphics);
 		}
-		//	    hiena.get(0).draw(bufferGraphics);
-		//	    hiena.get(1).draw(bufferGraphics);
-		//	    hiena.get(2).draw(bufferGraphics);
 		ataque.draw(bufferGraphics);
-//		corazon.draw(bufferGraphics);
+		//		corazon.draw(bufferGraphics);
 		g.drawImage(buffer, 0, 0, this);
 	}
 
