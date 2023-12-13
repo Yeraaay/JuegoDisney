@@ -81,7 +81,6 @@ public class Controlador extends JFrame implements Runnable, KeyListener {
 			}
 		});
 
-
 		Thread hilo = new Thread(this);
 		hilo.start();
 	}
@@ -191,7 +190,7 @@ public class Controlador extends JFrame implements Runnable, KeyListener {
 				if (mickey.colisionaConCorason(corazon) && mickey.getVida() < mickey.getVidaMaxima() - 150) {
 					mickey.setVida(mickey.getVida() + 150);
 					listacorazon.remove(corazon);
-					 break; // Rompe el bucle para evitar problemas al modificar la lista mientras se itera sobre ella
+					break; // Rompe el bucle para evitar problemas al modificar la lista mientras se itera sobre ella
 				}
 			}
 
@@ -223,10 +222,9 @@ public class Controlador extends JFrame implements Runnable, KeyListener {
 				}
 			}
 
-
 			if (contadorVelocidad % (1000 / 30) == 0) {
-			    tiempoPartida++;
-			    System.out.println("Segundos sobrevividos: " + tiempoPartida);
+				tiempoPartida++;
+				System.out.println("Segundos sobrevividos: " + tiempoPartida);
 			}
 
 			if (contadorVelocidad % 240 == 0) {
@@ -379,30 +377,30 @@ public class Controlador extends JFrame implements Runnable, KeyListener {
 			}
 		}
 	}
-	
+
 	private void reiniciarJuego() {
-	    fondoOffsetX = 0;
-	    fondoOffsetY = 0;
+		fondoOffsetX = 0;
+		fondoOffsetY = 0;
 
-	    // Limpiar todas las hienas
-	    hiena.clear();
+		// Limpiar todas las hienas
+		hiena.clear();
 
-	    // Limpiar todos los corazones
-	    listacorazon.clear();
+		// Limpiar todos los corazones
+		listacorazon.clear();
 
-	    // Reiniciar la posición inicial de Mickey
-	    mickey.setX(ANCHURA / 2);
-	    mickey.setY(ALTURA / 2);
+		// Reiniciar la posición inicial de Mickey
+		mickey.setX(ANCHURA / 2);
+		mickey.setY(ALTURA / 2);
 
-	    // Reiniciar la vida de Mickey
-	    mickey.setVida(1000);
-	    tiempoPartida=0;
+		// Reiniciar la vida de Mickey
+		mickey.setVida(1000);
+		tiempoPartida=0;
 
-	    // Reinicializar los arrays adicionales de hienas y corazones
-	    contadorVelocidad = 0; // Reinicializar el contador de velocidad para generar nuevas hienas y corazones
+		// Reinicializar los arrays adicionales de hienas y corazones
+		contadorVelocidad = 0; // Reinicializar el contador de velocidad para generar nuevas hienas y corazones
 	}
 
-	
+
 	private void reiniciarHienas() {
 		// Limpiar la lista actual de hienas
 		hiena.clear();
@@ -412,7 +410,7 @@ public class Controlador extends JFrame implements Runnable, KeyListener {
 			hiena.add(generarHienaAleatoria());
 		}
 	}
-	
+
 	public void update(Graphics g) {
 		paint(g);
 	}
@@ -430,7 +428,6 @@ public class Controlador extends JFrame implements Runnable, KeyListener {
 			dPresionada = true;
 		}
 	}
-
 
 	public void paint(Graphics g) {
 		Graphics bufferGraphics = buffer.getGraphics();
@@ -459,8 +456,6 @@ public class Controlador extends JFrame implements Runnable, KeyListener {
 		g.drawImage(buffer, 0, 0, this);
 	}
 
-
-
 	public static void main(String[] args) {
 		new Controlador();
 	}
@@ -485,8 +480,4 @@ public class Controlador extends JFrame implements Runnable, KeyListener {
 			dPresionada = false;
 		}
 	}
-
-
-
-
 }

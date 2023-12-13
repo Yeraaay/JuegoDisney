@@ -20,8 +20,6 @@ public class MickeyMouse {
 	private int longitudBarraVida;
 	public boolean direccion = true;
 
-
-
 	//Métodos (Getter y Setter)    
 	public  int getX() {
 		return x;

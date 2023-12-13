@@ -237,12 +237,6 @@ public class Hienas {
             // Si la hiena aún está viva, dibujar la imagen de la animación normal
             g.drawImage(images[currentFrame], x, y, null);
         }
-    	
 
-        //g.setColor(Color.red);
-        //g.fillRect(x, y - 10, getVida(), 5); // Barra de vida
     }
-
-
-
 }
