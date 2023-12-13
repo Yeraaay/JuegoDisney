@@ -39,14 +39,14 @@ public class Controlador extends JFrame implements Runnable, KeyListener {
 	private int fondoHeight; // Alto de la imagen de fondo
 	private int fondoOffsetX = 0; // Desplazamiento horizontal del fondo
 	private int fondoOffsetY = 0; // Desplazamiento vertical del fondo
-	int speed = 50; // Define la velocidad de movimiento
+	int speed = 7; // Define la velocidad de movimiento
 	public boolean wPresionada = false;
 	public boolean aPresionada = false;
 	public boolean sPresionada = false;
 	public boolean dPresionada = false;
 
 	// Tiempo de partida
-	private int tiempoPartida = 60;
+	private int tiempoPartida = 0;
 	private boolean juegoActivo = true;
 	private JLabel labelTiempo;
 
@@ -149,7 +149,7 @@ public class Controlador extends JFrame implements Runnable, KeyListener {
 		// Generar 5 corazones en posiciones aleatorias alrededor de Mickey, pero más lejos
 		for (int i = 0; i < 5; i++) {
 			Corazon nuevoCorazon = new Corazon(0, 0);
-			nuevoCorazon.generarPosicionAleatoria(960 - fondoOffsetX, 4800 + fondoOffsetX, 540 - fondoOffsetY, 2700 + fondoOffsetY);
+			nuevoCorazon.generarPosicionAleatoria(960 , 4800 , 540 , 2700 );
 			listacorazon.add(nuevoCorazon);
 		}
 	}
@@ -168,11 +168,11 @@ public class Controlador extends JFrame implements Runnable, KeyListener {
 					System.out.println("Vida mickey: " + mickey.getVida());
 				}
 			}
-			if (mickey.getVida() <= 0 || tiempoPartida == 4200) {
+			if (mickey.getVida() <= 0) {
 				// Mostrar JOptionPane
 				int opcion = JOptionPane.showOptionDialog(
 						this,
-						"GAME OVER ¿Desea reiniciar el juego?",
+						"GAME OVER has durante sobrevivido: "+tiempoPartida+" segundos. ¿Desea reiniciar el juego?",
 						"Game Over",
 						JOptionPane.YES_NO_OPTION,
 						JOptionPane.QUESTION_MESSAGE,
@@ -224,16 +224,16 @@ public class Controlador extends JFrame implements Runnable, KeyListener {
 			}
 
 
-			if (contadorVelocidad % 70 == 0) {
-				tiempoPartida--;
-				System.out.println("Timepo restante: " + getTiempoPartida());
+			if (contadorVelocidad % (1000 / 30) == 0) {
+			    tiempoPartida++;
+			    System.out.println("Segundos sobrevividos: " + tiempoPartida);
 			}
 
 			if (contadorVelocidad % 240 == 0) {
 				inicializarHienas();
 			}
 
-			if (contadorVelocidad % 70 == 0){
+			if (contadorVelocidad % 1100 == 0){
 				generarCorazones();
 			}
 
@@ -263,7 +263,7 @@ public class Controlador extends JFrame implements Runnable, KeyListener {
 			}
 			if (wPresionada && !aPresionada && !dPresionada && fondoOffsetY>10) {
 				for (Hienas hiena : hiena) {
-					hiena.setY(hiena.getY()+speed);
+					hiena.setY(hiena.getY()+speed*2);
 					hiena.updateAnimation();
 				}
 				for (Corazon corazon: listacorazon) {
@@ -274,7 +274,7 @@ public class Controlador extends JFrame implements Runnable, KeyListener {
 
 			} else if (sPresionada && !aPresionada && !dPresionada && fondoOffsetY<3220) {
 				for (Hienas hiena : hiena) {
-					hiena.setY(hiena.getY()-speed);
+					hiena.setY(hiena.getY()-speed*2);
 					hiena.updateAnimation();
 				}
 				for (Corazon corazon: listacorazon) {
@@ -286,7 +286,7 @@ public class Controlador extends JFrame implements Runnable, KeyListener {
 			}else if (aPresionada && !wPresionada && !sPresionada && fondoOffsetX>10){
 				mickey.setImages(mickey.getImagesIzquierda());
 				for (Hienas hiena : hiena) {
-					hiena.setX(hiena.getX()+speed);
+					hiena.setX(hiena.getX()+speed*2);
 					hiena.updateAnimation();
 				}
 				for (Corazon corazon: listacorazon) {
@@ -298,7 +298,7 @@ public class Controlador extends JFrame implements Runnable, KeyListener {
 			} else if (dPresionada && !wPresionada && !sPresionada && fondoOffsetX<5750) {
 				mickey.setImages(mickey.getImagesDerecha());
 				for (Hienas hiena : hiena) {
-					hiena.setX(hiena.getX()-speed);
+					hiena.setX(hiena.getX()-speed*2);
 					hiena.updateAnimation();
 				}
 				for (Corazon corazon: listacorazon) {
@@ -396,6 +396,7 @@ public class Controlador extends JFrame implements Runnable, KeyListener {
 
 	    // Reiniciar la vida de Mickey
 	    mickey.setVida(1000);
+	    tiempoPartida=0;
 
 	    // Reinicializar los arrays adicionales de hienas y corazones
 	    contadorVelocidad = 0; // Reinicializar el contador de velocidad para generar nuevas hienas y corazones
