@@ -149,7 +149,7 @@ public class Controlador extends JFrame implements Runnable, KeyListener {
 		// Generar 5 corazones en posiciones aleatorias alrededor de Mickey, pero más lejos
 		for (int i = 0; i < 5; i++) {
 			Corazon nuevoCorazon = new Corazon(0, 0);
-			nuevoCorazon.generarPosicionAleatoria(960, 1000, 540, 1000);
+			nuevoCorazon.generarPosicionAleatoria(960 - fondoOffsetX, 4800 + fondoOffsetX, 540 - fondoOffsetY, 2700 + fondoOffsetY);
 			listacorazon.add(nuevoCorazon);
 		}
 	}
