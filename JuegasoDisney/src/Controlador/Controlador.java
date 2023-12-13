@@ -58,7 +58,9 @@ public class Controlador extends JFrame implements Runnable, KeyListener {
 		setTitle("Disney's Survival");
 		setSize(1920, 1080);
 		setVisible(true);
-		//		corazon = new Corazon(0, 0);
+
+		corazon = new Corazon(0, 0);
+
 		addKeyListener(this); // Agregar el KeyListener al JFrame
 		setFocusable(true);
 		setFocusTraversalKeysEnabled(false);
@@ -66,7 +68,9 @@ public class Controlador extends JFrame implements Runnable, KeyListener {
 		mickey = new MickeyMouse(ANCHURA / 2, ALTURA /2);
 		ataque = new Ataques((ANCHURA/2) -55, (ALTURA / 2) -40);
 		buffer = new BufferedImage(ANCHURA, ALTURA, BufferedImage.TYPE_INT_RGB);
-		//		corazon.generarPosicionAleatoria(mickey.getX(), mickey.getY(), ANCHURA, ALTURA);
+
+		corazon.generarPosicionAleatoria(30, 5720, 30, 3190);
+
 		try {
 			fondoImage = ImageIO.read(new File("DisneySprite/Mapa/mapav2.png")); // Cambia la ruta por la de tu imagen
 			fondoWidth = fondoImage.getWidth();
@@ -213,6 +217,7 @@ public class Controlador extends JFrame implements Runnable, KeyListener {
 				}
 			}
 
+
 			if (contadorVelocidad % 70 == 0) {
 				tiempoPartida--;
 				System.out.println("Timepo restante: " + getTiempoPartida());
@@ -220,6 +225,11 @@ public class Controlador extends JFrame implements Runnable, KeyListener {
 
 			if (contadorVelocidad % 240 == 0) {
 				inicializarHienas();
+			}
+
+
+			if (contadorVelocidad % 10 == 0) {
+				corazon.updateAnimation();
 			}
 
 			if (contadorVelocidad % 10 == 0) {
@@ -245,6 +255,8 @@ public class Controlador extends JFrame implements Runnable, KeyListener {
 					hiena.setY(hiena.getY()+speed);
 					hiena.updateAnimation();
 				}
+				corazon.setY(corazon.getY() + speed * 2);
+			    corazon.updateAnimation();
 				fondoOffsetY -= speed*2;
 
 			} else if (sPresionada && !aPresionada && !dPresionada && fondoOffsetY<3220) {
@@ -252,6 +264,8 @@ public class Controlador extends JFrame implements Runnable, KeyListener {
 					hiena.setY(hiena.getY()-speed);
 					hiena.updateAnimation();
 				}
+			    corazon.setY(corazon.getY() - speed * 2);
+			    corazon.updateAnimation();
 				fondoOffsetY += speed*2;
 			}else if (aPresionada && !wPresionada && !sPresionada && fondoOffsetX>10){
 				mickey.setImages(mickey.getImagesIzquierda());
@@ -259,6 +273,8 @@ public class Controlador extends JFrame implements Runnable, KeyListener {
 					hiena.setX(hiena.getX()+speed);
 					hiena.updateAnimation();
 				}
+			    corazon.setX(corazon.getX() + speed * 2);
+			    corazon.updateAnimation();
 				fondoOffsetX -= speed*2;
 			} else if (dPresionada && !wPresionada && !sPresionada && fondoOffsetX<5750) {
 				mickey.setImages(mickey.getImagesDerecha());
@@ -266,6 +282,8 @@ public class Controlador extends JFrame implements Runnable, KeyListener {
 					hiena.setX(hiena.getX()-speed);
 					hiena.updateAnimation();
 				}
+			    corazon.setX(corazon.getX() - speed * 2);
+			    corazon.updateAnimation();
 				fondoOffsetX += speed*2;
 			}else if (wPresionada && aPresionada && fondoOffsetY>10 && fondoOffsetX>10) {
 				mickey.setImages(mickey.getImagesIzquierda());
@@ -273,7 +291,11 @@ public class Controlador extends JFrame implements Runnable, KeyListener {
 					hiena.setY(hiena.getY()+speed);
 					hiena.setX(hiena.getX()+speed);
 					hiena.updateAnimation();
+
 				}
+				corazon.setY(corazon.getY()+speed);
+				corazon.setX(corazon.getX()+speed);
+				corazon.updateAnimation();
 				fondoOffsetY -= speed;
 				fondoOffsetX -= speed;
 			}else if (wPresionada && dPresionada && fondoOffsetY>10 && fondoOffsetX<5750) {
@@ -282,7 +304,11 @@ public class Controlador extends JFrame implements Runnable, KeyListener {
 					hiena.setY(hiena.getY()+speed);
 					hiena.setX(hiena.getX()-speed);
 					hiena.updateAnimation();
+
 				}
+				corazon.setY(corazon.getY()+speed);
+				corazon.setX(corazon.getX()-speed);
+				corazon.updateAnimation();
 				fondoOffsetY -= speed;
 				fondoOffsetX += speed;
 			}else if (sPresionada && aPresionada && fondoOffsetY<3220 && fondoOffsetX>10) {
@@ -291,7 +317,11 @@ public class Controlador extends JFrame implements Runnable, KeyListener {
 					hiena.setY(hiena.getY()-speed);
 					hiena.setX(hiena.getX()+speed);
 					hiena.updateAnimation();
+
 				}
+				corazon.setY(corazon.getY()-speed);
+				corazon.setX(corazon.getX()+speed);
+				corazon.updateAnimation();
 				fondoOffsetY += speed;
 				fondoOffsetX -= speed;
 			}else if (sPresionada && dPresionada && fondoOffsetY<3220 && fondoOffsetX<5750) {
@@ -300,14 +330,20 @@ public class Controlador extends JFrame implements Runnable, KeyListener {
 					hiena.setY(hiena.getY()-speed);
 					hiena.setX(hiena.getX()-speed);
 					hiena.updateAnimation();
+
 				}
+				corazon.setY(corazon.getY()-speed);
+				corazon.setX(corazon.getX()-speed);
+				corazon.updateAnimation();
 				fondoOffsetY += speed;
 				fondoOffsetX += speed;
 			}
 			repaint();
 
 			try {
+
 				Thread.sleep(30);
+
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
@@ -362,13 +398,15 @@ public class Controlador extends JFrame implements Runnable, KeyListener {
 
 			bufferGraphics.drawImage(fondoImage, -fondoOffsetX, -fondoOffsetY, this);
 		}
-
 		mickey.draw(bufferGraphics);
 		for (Hienas hiena: hiena) {
 			hiena.draw(bufferGraphics);
 		}
+
+
 		ataque.draw(bufferGraphics);
-		//		corazon.draw(bufferGraphics);
+		corazon.draw(bufferGraphics);
+
 		g.drawImage(buffer, 0, 0, this);
 	}
 
